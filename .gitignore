@@ -1,1 +1,5 @@
 .env
+node_modules/
+opelcar-landing-page/
+errores-opelcar1.txt
+*.log

@@ -1178,7 +1178,8 @@ img, video {
   padding: 48px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 48px;
   box-shadow: var(--shadow-lg);
   position: relative;
   overflow: hidden;
