@@ -1,0 +1,107 @@
+[TAILING] Tailing last 100 lines for [opelcar] process (change the value with --lines option)
+/home/servidor/.pm2/logs/opelcar-out.log last 100 lines:
+0|opelcar  | 🚀 Servidor de OPELCAR S.A.S ejecutándose en http://localhost:8000
+0|opelcar  | 🚀 Servidor de OPELCAR S.A.S ejecutándose en http://localhost:8000
+
+/home/servidor/.pm2/logs/opelcar-error.log last 100 lines:
+0|opelcar  | - /home/servidor/servidor-Opelcar/opelcar-landing-page/server.js
+0|opelcar  |     at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)
+0|opelcar  |     at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)
+0|opelcar  |     at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)
+0|opelcar  |     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)
+0|opelcar  |     at Module._load (node:internal/modules/cjs/loader:1294:5)
+0|opelcar  |     at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+0|opelcar  |     at Module.require (node:internal/modules/cjs/loader:1617:12)
+0|opelcar  |     at require (node:internal/modules/helpers:153:16)
+0|opelcar  |     at Object.<anonymous> (/home/servidor/servidor-Opelcar/opelcar-landing-page/server.js:1:17)
+0|opelcar  |     at Module._compile (node:internal/modules/cjs/loader:1871:14) {
+0|opelcar  |   code: 'MODULE_NOT_FOUND',
+0|opelcar  |   requireStack: [ '/home/servidor/servidor-Opelcar/opelcar-landing-page/server.js' ]
+0|opelcar  | }
+0|opelcar  | Error: Cannot find module 'express'
+0|opelcar  | Require stack:
+0|opelcar  | - /home/servidor/servidor-Opelcar/opelcar-landing-page/server.js
+0|opelcar  |     at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)
+0|opelcar  |     at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)
+0|opelcar  |     at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)
+0|opelcar  |     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)
+0|opelcar  |     at Module._load (node:internal/modules/cjs/loader:1294:5)
+0|opelcar  |     at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+0|opelcar  |     at Module.require (node:internal/modules/cjs/loader:1617:12)
+0|opelcar  |     at require (node:internal/modules/helpers:153:16)
+0|opelcar  |     at Object.<anonymous> (/home/servidor/servidor-Opelcar/opelcar-landing-page/server.js:1:17)
+0|opelcar  |     at Module._compile (node:internal/modules/cjs/loader:1871:14) {
+0|opelcar  |   code: 'MODULE_NOT_FOUND',
+0|opelcar  |   requireStack: [ '/home/servidor/servidor-Opelcar/opelcar-landing-page/server.js' ]
+0|opelcar  | }
+0|opelcar  | Error: Cannot find module 'express'
+0|opelcar  | Require stack:
+0|opelcar  | - /home/servidor/servidor-Opelcar/opelcar-landing-page/server.js
+0|opelcar  |     at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)
+0|opelcar  |     at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)
+0|opelcar  |     at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)
+0|opelcar  |     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)
+0|opelcar  |     at Module._load (node:internal/modules/cjs/loader:1294:5)
+0|opelcar  |     at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+0|opelcar  |     at Module.require (node:internal/modules/cjs/loader:1617:12)
+0|opelcar  |     at require (node:internal/modules/helpers:153:16)
+0|opelcar  |     at Object.<anonymous> (/home/servidor/servidor-Opelcar/opelcar-landing-page/server.js:1:17)
+0|opelcar  |     at Module._compile (node:internal/modules/cjs/loader:1871:14) {
+0|opelcar  |   code: 'MODULE_NOT_FOUND',
+0|opelcar  |   requireStack: [ '/home/servidor/servidor-Opelcar/opelcar-landing-page/server.js' ]
+0|opelcar  | }
+0|opelcar  | Error: Cannot find module 'express'
+0|opelcar  | Require stack:
+0|opelcar  | - /home/servidor/servidor-Opelcar/opelcar-landing-page/server.js
+0|opelcar  |     at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)
+0|opelcar  |     at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)
+0|opelcar  |     at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)
+0|opelcar  |     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)
+0|opelcar  |     at Module._load (node:internal/modules/cjs/loader:1294:5)
+0|opelcar  |     at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+0|opelcar  |     at Module.require (node:internal/modules/cjs/loader:1617:12)
+0|opelcar  |     at require (node:internal/modules/helpers:153:16)
+0|opelcar  |     at Object.<anonymous> (/home/servidor/servidor-Opelcar/opelcar-landing-page/server.js:1:17)
+0|opelcar  |     at Module._compile (node:internal/modules/cjs/loader:1871:14) {
+0|opelcar  |   code: 'MODULE_NOT_FOUND',
+0|opelcar  |   requireStack: [ '/home/servidor/servidor-Opelcar/opelcar-landing-page/server.js' ]
+0|opelcar  | }
+0|opelcar  | Error: Cannot find module 'express'
+0|opelcar  | Require stack:
+0|opelcar  | - /home/servidor/servidor-Opelcar/opelcar-landing-page/server.js
+0|opelcar  |     at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)
+0|opelcar  |     at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)
+0|opelcar  |     at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)
+0|opelcar  |     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)
+0|opelcar  |     at Module._load (node:internal/modules/cjs/loader:1294:5)
+0|opelcar  |     at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+0|opelcar  |     at Module.require (node:internal/modules/cjs/loader:1617:12)
+0|opelcar  |     at require (node:internal/modules/helpers:153:16)
+0|opelcar  |     at Object.<anonymous> (/home/servidor/servidor-Opelcar/opelcar-landing-page/server.js:1:17)
+0|opelcar  |     at Module._compile (node:internal/modules/cjs/loader:1871:14) {
+0|opelcar  |   code: 'MODULE_NOT_FOUND',
+0|opelcar  |   requireStack: [ '/home/servidor/servidor-Opelcar/opelcar-landing-page/server.js' ]
+0|opelcar  | }
+0|opelcar  | ⚠️ Error en la configuración SMTP de Nodemailer: connect ECONNREFUSED 127.0.0.1:587
+0|opelcar  | ❌ Error al procesar o enviar la cotización: Error: connect ECONNREFUSED ::1:587
+0|opelcar  |     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1706:16) {
+0|opelcar  |   errno: -111,
+0|opelcar  |   code: 'ESOCKET',
+0|opelcar  |   syscall: 'connect',
+0|opelcar  |   address: '::1',
+0|opelcar  |   port: 587,
+0|opelcar  |   command: 'CONN'
+0|opelcar  | }
+0|opelcar  | Failed to resolve IPv4 addresses with current network
+0|opelcar  | ⚠️ Error en la configuración SMTP de Nodemailer: connect ECONNREFUSED 127.0.0.1:587
+0|opelcar  | Failed to resolve IPv4 addresses with current network
+0|opelcar  | ❌ Error al procesar o enviar la cotización: Error: connect ECONNREFUSED 127.0.0.1:587
+0|opelcar  |     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1706:16) {
+0|opelcar  |   errno: -111,
+0|opelcar  |   code: 'ESOCKET',
+0|opelcar  |   syscall: 'connect',
+0|opelcar  |   address: '127.0.0.1',
+0|opelcar  |   port: 587,
+0|opelcar  |   command: 'CONN'
+0|opelcar  | }
+
