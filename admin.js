@@ -918,10 +918,7 @@ document.addEventListener('DOMContentLoaded', () => {
     editorPreviewPaper.innerHTML = previewHtml;
   };
 
-  const closeModal = () => {
-    detailModal.classList.remove('open');
-    document.body.style.overflow = '';
-  };
+
 
   if (btnCloseModal) btnCloseModal.addEventListener('click', closeModal);
   if (btnCloseModalFooter) btnCloseModalFooter.addEventListener('click', closeModal);
