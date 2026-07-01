@@ -52,6 +52,12 @@ def get_next_consecutivo():
         return f"OP-{random.randint(1000, 9999)}"
 
 class OpelcarRequestHandler(SimpleHTTPRequestHandler):
+    def end_headers(self):
+        clean_path = self.path.split('?')[0]
+        if clean_path.endswith(".html") or clean_path.endswith(".js") or clean_path.endswith(".css") or clean_path == "/" or "/api/" in self.path:
+            self.send_header('Cache-Control', 'no-cache, must-revalidate')
+        super().end_headers()
+
     def do_GET(self):
         # Interceptar endpoint de listado de cotizaciones
         if self.path == "/api/admin/cotizaciones":

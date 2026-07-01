@@ -46,8 +46,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Servir archivos estáticos del sitio web (HTML, CSS, JS, imágenes) desde esta misma carpeta
-app.use(express.static(__dirname));
+// Servir archivos estáticos del sitio web (HTML, CSS, JS, imágenes) desde esta misma carpeta con prevención de cacheo agresivo
+app.use(express.static(__dirname, {
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html') || filePath.endsWith('.js') || filePath.endsWith('.css')) {
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    }
+  }
+}));
 
 // Configuración del Transportador de Nodemailer (SMTP)
 // Se inicializa con variables de entorno para proteger las credenciales
