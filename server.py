@@ -308,6 +308,88 @@ class OpelcarRequestHandler(SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(json.dumps({"success": False, "error": "Error interno del servidor.", "details": str(e)}).encode('utf-8'))
                 
+        elif self.path == "/api/admin/enviar-cotizacion":
+            auth_header = self.headers.get('Authorization')
+            if not auth_header or not auth_header.startswith('Bearer '):
+                self.send_response(401)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": "Acceso no autorizado. Token ausente."}).encode('utf-8'))
+                return
+
+            token = auth_header.split(' ')[1]
+            if token not in ACTIVE_SESSIONS:
+                self.send_response(401)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": "Sesión inválida o expirada."}).encode('utf-8'))
+                return
+
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+
+            try:
+                data = json.loads(post_data.decode('utf-8'))
+                email_destinatario = data.get("emailDestinatario")
+                asunto = data.get("asunto")
+                contenido_html = data.get("contenidoHtml")
+                consecutivo = data.get("consecutivo")
+
+                if not email_destinatario or not asunto or not contenido_html or not consecutivo:
+                    self.send_response(400)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"success": False, "error": "Faltan campos obligatorios."}).encode('utf-8'))
+                    return
+
+                # Configuración de SMTP desde el archivo .env
+                smtp_host = ENV.get("SMTP_HOST", "smtp.gmail.com")
+                smtp_port = int(ENV.get("SMTP_PORT", 587))
+                smtp_user = ENV.get("SMTP_USER")
+                smtp_pass = ENV.get("SMTP_PASS")
+                
+                if smtp_user and smtp_pass:
+                    cc_email = "guillermocamiloflorezerazo@gmail.com"
+                    msg = MIMEMultipart('alternative')
+                    msg['Subject'] = asunto
+                    msg['From'] = f"Opelcar Cotizaciones <{smtp_user}>"
+                    msg['To'] = email_destinatario
+                    msg['Cc'] = cc_email
+                    msg.attach(MIMEText(contenido_html, 'html'))
+
+                    recipients = [email_destinatario, cc_email]
+                    server = smtplib.SMTP(smtp_host, smtp_port)
+                    server.starttls()
+                    server.login(smtp_user, smtp_pass)
+                    server.sendmail(smtp_user, recipients, msg.as_string())
+                    server.quit()
+                    print(f"📧 Cotización {consecutivo} formalizada y enviada por correo a {email_destinatario} con copia a {cc_email}")
+                else:
+                    print("⚠️ SMTP no configurado en .env. Saltando envío de correo real de administración.")
+
+                # Actualizar el archivo JSON local a 'enviada'
+                filepath = os.path.join(DATA_DIR, f"{consecutivo}.json")
+                if os.path.exists(filepath):
+                    try:
+                        with open(filepath, "r", encoding="utf-8") as f:
+                            quote_data = json.load(f)
+                        quote_data["status"] = "enviada"
+                        with open(filepath, "w", encoding="utf-8") as f:
+                            json.dump(quote_data, f, indent=2, ensure_ascii=False)
+                    except Exception as err:
+                        print(f"Error al actualizar estado de {consecutivo} en Python:", str(err))
+
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "message": "Cotización enviada exitosamente al cliente."}).encode('utf-8'))
+            except Exception as e:
+                print("❌ Error al enviar cotización en Python:", str(e))
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": "Error interno del servidor.", "details": str(e)}).encode('utf-8'))
+
         elif self.path == "/api/admin/logout":
             auth_header = self.headers.get('Authorization')
             if auth_header and auth_header.startswith('Bearer '):

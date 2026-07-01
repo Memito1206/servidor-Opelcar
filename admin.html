@@ -767,6 +767,326 @@
       color: #64748b;
     }
 
+    /* ESTILOS DEL GENERADOR DE COTIZACIONES (EDITOR + PREVIEW) */
+    .modal-container.editor-mode {
+      max-width: 1200px;
+      width: 95%;
+    }
+
+    .editor-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.3fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .editor-form {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 24px;
+      max-height: 65vh;
+      overflow-y: auto;
+      color: var(--text-dark);
+    }
+
+    .form-group-section {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .editor-preview {
+      background: #cbd5e1;
+      border: 1px solid #94a3b8;
+      border-radius: var(--radius-md);
+      padding: 24px;
+      max-height: 65vh;
+      overflow-y: auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .paper-sheet {
+      background: #ffffff;
+      width: 100%;
+      max-width: 800px;
+      min-height: 900px;
+      padding: 48px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      font-family: 'Inter', sans-serif;
+      color: #000000;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+
+    .paper-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 16px;
+    }
+
+    .paper-logo-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .paper-logo-box h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+
+    .paper-logo-box h3 span {
+      color: var(--accent);
+    }
+
+    .paper-logo-box p {
+      font-size: 11px;
+      color: #64748b;
+      margin: 2px 0 0 0;
+      font-weight: 500;
+    }
+
+    .paper-meta-box {
+      text-align: right;
+    }
+
+    .paper-meta-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 0 0 4px 0;
+    }
+
+    .paper-meta-number {
+      font-size: 14px;
+      color: #1e293b;
+      font-weight: 700;
+      margin: 0 0 2px 0;
+    }
+
+    .paper-meta-date {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .paper-title {
+      text-align: center;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #1e293b;
+      margin: 20px 0 16px 0;
+      letter-spacing: 0.5px;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 6px;
+    }
+
+    .paper-client-info {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+    }
+
+    .paper-client-info th {
+      text-align: left;
+      font-size: 12px;
+      color: #475569;
+      padding: 6px 12px;
+      background-color: #f8fafc;
+      width: 25%;
+      border: 1px solid #e2e8f0;
+      font-weight: 600;
+    }
+
+    .paper-client-info td {
+      font-size: 12px;
+      color: #1e293b;
+      padding: 6px 12px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .paper-intro {
+      font-size: 12px;
+      line-height: 1.6;
+      color: #1e293b;
+      margin-bottom: 16px;
+    }
+
+    .paper-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+
+    .paper-table th {
+      background: var(--primary);
+      color: #ffffff;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 8px;
+      border: 1px solid #cbd5e1;
+      text-transform: uppercase;
+    }
+
+    .paper-table td {
+      padding: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 11px;
+      color: #0f172a;
+      text-align: center;
+    }
+
+    .paper-section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin: 20px 0 8px 0;
+    }
+
+    .paper-bullets {
+      margin-left: 20px;
+      font-size: 12px;
+      color: #1e293b;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .paper-bullets li {
+      margin-bottom: 6px;
+    }
+
+    .paper-notes {
+      font-size: 11px;
+      line-height: 1.5;
+      color: #475569;
+      margin-top: 16px;
+      border-left: 2px solid #cbd5e1;
+      padding-left: 12px;
+    }
+
+    .paper-sign-section {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .paper-sign-line {
+      border-top: 1.5px solid #1e293b;
+      width: 240px;
+      padding-top: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .paper-sign-title {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .paper-footer {
+      margin-top: auto;
+      border-top: 2px solid var(--primary);
+      padding-top: 16px;
+      text-align: center;
+      font-size: 10px;
+      color: #64748b;
+    }
+
+    .paper-footer p {
+      margin: 2px 0;
+    }
+
+    .input-row-flex {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .include-item-input {
+      flex: 1;
+      background: #ffffff;
+      color: #000;
+      border: 1px solid #cbd5e1;
+      padding: 6px 10px;
+      font-size: 13px;
+      border-radius: 4px;
+    }
+
+    .btn-icon-del {
+      background: #fee2e2;
+      color: var(--accent);
+      border: 1px solid #fca5a5;
+      border-radius: 4px;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      transition: var(--transition);
+    }
+
+    .btn-icon-del:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .form-table-compact {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+    }
+
+    .form-table-compact th {
+      text-align: left;
+      font-size: 11px;
+      color: #475569;
+      padding: 6px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+    }
+
+    .form-table-compact td {
+      padding: 4px;
+      border: 1px solid #cbd5e1;
+    }
+
+    .form-table-input {
+      width: 100%;
+      border: none;
+      padding: 4px 6px;
+      font-size: 12px;
+      background: transparent;
+      color: #000;
+    }
+
+    .form-table-input:focus {
+      outline: none;
+      background: #f8fafc;
+    }
+
     /* ESTILOS DE IMPRESIÓN */
     @media print {
       body * {
@@ -799,13 +1119,45 @@
         padding: 0 !important;
         overflow: visible !important;
       }
+      #details-view {
+        display: none !important;
+      }
+      #editor-view {
+        display: block !important;
+      }
+      .editor-grid {
+        display: block !important;
+      }
+      .editor-form {
+        display: none !important;
+      }
+      .editor-preview {
+        display: block !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      .paper-sheet {
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        min-height: auto !important;
+        border: none !important;
+        visibility: visible !important;
+      }
+      .paper-sheet * {
+        visibility: visible !important;
+      }
       .printable-format {
         border: none !important;
         padding: 0 !important;
-        visibility: visible;
+        visibility: visible !important;
       }
       .printable-format * {
-        visibility: visible;
+        visibility: visible !important;
       }
     }
   </style>
@@ -935,7 +1287,7 @@
 
   <!-- MODAL DE DETALLE DE COTIZACIÓN -->
   <div id="detail-modal" class="modal-overlay">
-    <div class="modal-container">
+    <div class="modal-container" id="modal-container-elem">
       <div class="modal-header">
         <h3 id="modal-title-consecutivo">Detalles de Cotización OP-1001</h3>
         <button class="modal-close" id="btn-close-modal">&times;</button>
@@ -943,68 +1295,161 @@
       
       <div class="modal-body">
         
-        <!-- FORMATO OFICIAL DE IMPRESIÓN -->
-        <div class="printable-format" id="printable-quote-document">
-          <div class="print-header">
-            <div class="print-logo-box">
-              <h4>OPELCAR<span>.</span></h4>
-              <p>Operador Logístico de Carga Internacional S.A.S</p>
+        <!-- VISTA 1: FICHA DE SOLICITUD LEÍDA (DETALLES) -->
+        <div id="details-view">
+          <!-- FORMATO OFICIAL DE SOLICITUD -->
+          <div class="printable-format" id="printable-quote-document">
+            <div class="print-header">
+              <div class="print-logo-box">
+                <h4>OPELCAR<span>.</span></h4>
+                <p>Operador Logístico de Carga Internacional S.A.S</p>
+              </div>
+              <div class="print-meta-box">
+                <div class="print-meta-title">SOLICITUD DE COTIZACIÓN</div>
+                <div class="print-meta-number">No. OP-<span id="print-consecutivo">1001</span></div>
+                <div class="print-meta-date">Fecha: <span id="print-date">01/07/2026</span></div>
+              </div>
             </div>
-            <div class="print-meta-box">
-              <div class="print-meta-title">SOLICITUD DE COTIZACIÓN</div>
-              <div class="print-meta-number">No. OP-<span id="print-consecutivo">1001</span></div>
-              <div class="print-meta-date">Fecha: <span id="print-date">01/07/2026</span></div>
+
+            <div class="print-section-title">1. Información del Cliente</div>
+            <table class="print-table">
+              <tr>
+                <th>Cliente:</th>
+                <td id="print-client-name">Guillermo Florez</td>
+                <th>Empresa:</th>
+                <td id="print-client-company">Opelcar S.A.S</td>
+              </tr>
+              <tr>
+                <th>Email:</th>
+                <td id="print-client-email">administracion@opelcarsas.com</td>
+                <th>Teléfono:</th>
+                <td id="print-client-phone">3187583839</td>
+              </tr>
+            </table>
+
+            <div class="print-section-title">2. Detalles de la Operación Logística</div>
+            <table class="print-table">
+              <tr>
+                <th>Origen:</th>
+                <td id="print-origin">Ipiales, Colombia</td>
+                <th>Destino:</th>
+                <td id="print-destination">Bogotá, Colombia</td>
+              </tr>
+              <tr>
+                <th>Carga Requerida:</th>
+                <td><strong id="print-weight">15.5</strong> Toneladas (Ton)</td>
+                <th>Volumen Declarado:</th>
+                <td><strong id="print-volume">25.0</strong> m³ (Metros Cúbicos)</td>
+              </tr>
+            </table>
+
+            <div class="print-section-title">3. Descripción de Mercancía y Requerimientos</div>
+            <div class="print-desc-box" id="print-message">
+              Mercancía en cajas sobre estibas de madera.
+            </div>
+
+            <div class="print-footer">
+              <p>Este documento es un registro oficial de solicitud de servicios logísticos locales e internacionales.</p>
+              <p><strong>OPELCAR S.A.S</strong> — Carrera 8va #25a – 97, Ipiales, Colombia — gerencia@opelcarsas.com</p>
             </div>
           </div>
+        </div>
 
-          <div class="print-section-title">1. Información del Cliente</div>
-          <table class="print-table">
-            <tr>
-              <th>Cliente:</th>
-              <td id="print-client-name">Guillermo Florez</td>
-              <th>Empresa:</th>
-              <td id="print-client-company">Opelcar S.A.S</td>
-            </tr>
-            <tr>
-              <th>Email:</th>
-              <td id="print-client-email">administracion@opelcarsas.com</td>
-              <th>Teléfono:</th>
-              <td id="print-client-phone">3187583839</td>
-            </tr>
-          </table>
+        <!-- VISTA 2: EDITOR DINÁMICO Y LIVE PREVIEW MEMBRETADO -->
+        <div id="editor-view" style="display: none;">
+          <div class="editor-grid">
+            
+            <!-- CONTROLES DEL EDITOR (Lado Izquierdo) -->
+            <div class="editor-form">
+              <div style="margin-bottom: 20px;">
+                <label class="form-label" for="edit-template-select" style="color: var(--primary);">Seleccionar Plantilla de Respuesta</label>
+                <select class="filter-select" id="edit-template-select" style="width: 100%; border-color: #cbd5e1; background: #ffffff; color: #0f172a; font-weight: 600;">
+                  <option value="transporte">Plantilla 1: Transporte Terrestre</option>
+                  <option value="bodega">Plantilla 2: Almacenamiento (Bodega)</option>
+                  <option value="combinada">Plantilla 3: Combinado (Urbano + Bodega + Documentos)</option>
+                </select>
+              </div>
 
-          <div class="print-section-title">2. Detalles de la Operación Logística</div>
-          <table class="print-table">
-            <tr>
-              <th>Origen:</th>
-              <td id="print-origin">Ipiales, Colombia</td>
-              <th>Destino:</th>
-              <td id="print-destination">Bogotá, Colombia</td>
-            </tr>
-            <tr>
-              <th>Carga Requerida:</th>
-              <td><strong id="print-weight">15.5</strong> Toneladas (Ton)</td>
-              <th>Volumen Declarado:</th>
-              <td><strong id="print-volume">25.0</strong> m³ (Metros Cúbicos)</td>
-            </tr>
-          </table>
+              <!-- 1. Datos Generales -->
+              <div class="form-group-section">
+                <h4 style="margin-bottom: 12px; color: var(--primary); font-size: 12px; font-weight: 800; text-transform: uppercase;">1. Información del Destinatario</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                  <div class="form-group" style="margin-bottom: 8px;">
+                    <label class="form-label" style="font-size: 11px; margin-bottom: 4px; color:#475569;">Cliente</label>
+                    <input type="text" id="edit-client-name" class="form-input" style="background:#ffffff; color:#000000; border:1px solid #cbd5e1; padding:8px; font-size:13px;">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 8px;">
+                    <label class="form-label" style="font-size: 11px; margin-bottom: 4px; color:#475569;">Empresa</label>
+                    <input type="text" id="edit-client-company" class="form-input" style="background:#ffffff; color:#000000; border:1px solid #cbd5e1; padding:8px; font-size:13px;">
+                  </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                  <div class="form-group" style="margin-bottom: 8px;">
+                    <label class="form-label" style="font-size: 11px; margin-bottom: 4px; color:#475569;">Email</label>
+                    <input type="email" id="edit-client-email" class="form-input" style="background:#ffffff; color:#000000; border:1px solid #cbd5e1; padding:8px; font-size:13px;">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 8px;">
+                    <label class="form-label" style="font-size: 11px; margin-bottom: 4px; color:#475569;">Teléfono</label>
+                    <input type="text" id="edit-client-phone" class="form-input" style="background:#ffffff; color:#000000; border:1px solid #cbd5e1; padding:8px; font-size:13px;">
+                  </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                  <div class="form-group" style="margin-bottom: 8px;">
+                    <label class="form-label" style="font-size: 11px; margin-bottom: 4px; color:#475569;">Consecutivo</label>
+                    <input type="text" id="edit-consecutivo" class="form-input" readonly style="background:#f1f5f9; color:#64748b; border:1px solid #cbd5e1; padding:8px; font-size:13px; font-weight:700;">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 8px;">
+                    <label class="form-label" style="font-size: 11px; margin-bottom: 4px; color:#475569;">Fecha</label>
+                    <input type="text" id="edit-date" class="form-input" style="background:#ffffff; color:#000000; border:1px solid #cbd5e1; padding:8px; font-size:13px;">
+                  </div>
+                </div>
+              </div>
 
-          <div class="print-section-title">3. Descripción de Mercancía y Requerimientos</div>
-          <div class="print-desc-box" id="print-message">
-            Mercancía en cajas sobre estibas de madera.
-          </div>
+              <!-- 2. Campos Tarifarios Dinámicos -->
+              <div class="form-group-section" id="editor-dynamic-section">
+                <!-- Se rellena vía JS -->
+              </div>
 
-          <div class="print-footer">
-            <p>Este documento es un registro oficial de solicitud de servicios logísticos locales e internacionales.</p>
-            <p><strong>OPELCAR S.A.S</strong> — Carrera 8va #25a – 97, Ipiales, Colombia — gerencia@opelcarsas.com</p>
+              <!-- 3. Qué incluye -->
+              <div class="form-group-section">
+                <h4 style="margin-bottom: 12px; color: var(--primary); font-size: 12px; font-weight: 800; text-transform: uppercase;">3. El Servicio Incluye</h4>
+                <div id="edit-includes-container" style="display: flex; flex-direction: column; gap: 8px;">
+                  <!-- Inputs dinámicos -->
+                </div>
+                <button type="button" class="btn btn-secondary" id="btn-add-include-field" style="margin-top: 12px; padding: 6px 12px; font-size: 12px;">+ Agregar Ítem</button>
+              </div>
+
+              <!-- 4. Notas Adicionales -->
+              <div class="form-group-section">
+                <h4 style="margin-bottom: 8px; color: var(--primary); font-size: 12px; font-weight: 800; text-transform: uppercase;">4. Notas del Servicio</h4>
+                <textarea id="edit-notes-area" class="form-input" rows="3" style="background:#ffffff; color:#000000; border:1px solid #cbd5e1; padding:8px; font-size:13px; font-family:inherit; resize:vertical;"></textarea>
+              </div>
+            </div>
+            
+            <!-- LIVE PREVIEW DE LA CARTA OFICIAL (Lado Derecho) -->
+            <div class="editor-preview">
+              <div class="paper-sheet" id="editor-preview-paper">
+                <!-- Rellenado dinámicamente -->
+              </div>
+            </div>
+
           </div>
         </div>
 
       </div>
-
-      <div class="modal-footer">
+      
+      <!-- FOOTER DE VISTA DE DETALLES -->
+      <div class="modal-footer" id="details-modal-footer">
         <button class="btn btn-secondary" id="btn-close-modal-footer">Cerrar</button>
-        <button class="btn btn-primary" id="btn-print-document">🖨️ Imprimir / Guardar PDF</button>
+        <button class="btn btn-primary" id="btn-print-document">🖨️ Imprimir Ficha Solicitud</button>
+        <button class="btn btn-primary" id="btn-start-quote-action" style="background-color: var(--accent); color: white;">✍️ Responder / Cotizar</button>
+      </div>
+
+      <!-- FOOTER DE VISTA DE EDICIÓN -->
+      <div class="modal-footer" id="editor-modal-footer" style="display: none;">
+        <button class="btn btn-secondary" id="btn-back-to-details">Atrás a Ficha</button>
+        <button class="btn btn-primary" id="btn-print-quote">🖨️ Imprimir / Guardar PDF</button>
+        <button class="btn btn-primary" id="btn-send-quote-email" style="background-color: var(--accent); color: white;">📧 Enviar al Cliente</button>
       </div>
     </div>
   </div>

@@ -420,6 +420,74 @@ app.get('/api/admin/cotizaciones', (req, res) => {
   }
 });
 
+// Endpoint para enviar una cotización formalizada al cliente
+app.post('/api/admin/enviar-cotizacion', async (req, res) => {
+  const authHeader = req.headers['authorization'];
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({
+      success: false,
+      error: 'Acceso no autorizado. Token ausente.'
+    });
+  }
+
+  const token = authHeader.split(' ')[1];
+  if (!activeSessions.has(token)) {
+    return res.status(401).json({
+      success: false,
+      error: 'Sesión inválida o expirada.'
+    });
+  }
+
+  try {
+    const { emailDestinatario, asunto, contenidoHtml, consecutivo } = req.body;
+
+    if (!emailDestinatario || !asunto || !contenidoHtml || !consecutivo) {
+      return res.status(400).json({
+        success: false,
+        error: 'Faltan campos obligatorios para enviar la cotización.'
+      });
+    }
+
+    const ccEmail = 'guillermocamiloflorezerazo@gmail.com';
+    const mailOptions = {
+      from: `"Opelcar Cotizaciones" <${process.env.SMTP_USER}>`,
+      to: emailDestinatario,
+      cc: ccEmail,
+      subject: asunto,
+      html: contenidoHtml
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`📧 Cotización ${consecutivo} formalizada y enviada por correo a ${emailDestinatario} con copia a ${ccEmail}`);
+
+    // Actualizar el estado en el archivo JSON local a 'enviada'
+    const filePath = path.join(DATA_DIR, `${consecutivo}.json`);
+    if (fs.existsSync(filePath)) {
+      try {
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        const quoteData = JSON.parse(fileContent);
+        quoteData.status = 'enviada';
+        fs.writeFileSync(filePath, JSON.stringify(quoteData, null, 2), 'utf8');
+      } catch (err) {
+        console.error(`Error al actualizar estado de cotización ${consecutivo}:`, err);
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Cotización enviada exitosamente al cliente.'
+    });
+  } catch (error) {
+    console.error('❌ Error al enviar la cotización por correo:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al enviar el correo al cliente.',
+      details: error.message
+    });
+  }
+});
+
 // Endpoint para cerrar sesión
 app.post('/api/admin/logout', (req, res) => {
   const authHeader = req.headers['authorization'];
