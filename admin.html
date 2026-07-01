@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración | OPELCAR S.A.S</title>
+  <!-- Google Fonts (Outfit & Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* VARIABLES Y ESTILOS BASE */
+    :root {
+      --primary: #152e60;
+      --primary-light: #1e3f82;
+      --primary-dark: #0d1e3d;
+      --accent: #d01122;
+      --accent-hover: #b00e1b;
+      --bg-dark: #0a0f1d;
+      --card-bg-dark: rgba(21, 46, 96, 0.15);
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-bg-card: rgba(255, 255, 255, 0.02);
+      --text-light: #f8fafc;
+      --text-gray: #94a3b8;
+      --text-dark: #0f172a;
+      --border-gray: #e2e8f0;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Fondo Decorativo */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(208, 17, 34, 0.07) 0%, transparent 70%);
+      top: -200px;
+      left: -200px;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(21, 46, 96, 0.2) 0%, transparent 70%);
+      bottom: -100px;
+      right: -100px;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* TOAST / NOTIFICACIONES */
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .toast {
+      background: rgba(15, 23, 42, 0.95);
+      color: #fff;
+      padding: 16px 24px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      border-left: 4px solid var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      max-width: 450px;
+      transform: translateX(120%);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      backdrop-filter: blur(10px);
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    .toast.success { border-left-color: #10b981; }
+    .toast.error { border-left-color: var(--accent); }
+    .toast.info { border-left-color: #3b82f6; }
+    .toast.warning { border-left-color: #f59e0b; }
+
+    /* PANTALLA DE INICIO DE SESIÓN (LOGIN) */
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .login-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 48px;
+      width: 100%;
+      max-width: 460px;
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-logo {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 2.5rem;
+      color: var(--text-light);
+      margin-bottom: 8px;
+      letter-spacing: -1px;
+    }
+
+    .login-logo span {
+      color: var(--accent);
+    }
+
+    .login-subtitle {
+      color: var(--text-gray);
+      font-size: 0.95rem;
+      margin-bottom: 32px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-gray);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      color: var(--text-light);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: var(--transition);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 10px rgba(208, 17, 34, 0.2);
+    }
+
+    .btn-login {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 12px;
+      transition: var(--transition);
+      box-shadow: 0 4px 14px rgba(208, 17, 34, 0.3);
+    }
+
+    .btn-login:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 6px 20px rgba(208, 17, 34, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+    }
+
+    /* PANTALLA PRINCIPAL (DASHBOARD) */
+    .dashboard-container {
+      display: none; /* Se activa mediante JS tras el login */
+      min-height: 100vh;
+      flex-direction: column;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Header del Dashboard */
+    .dash-header {
+      background: rgba(15, 23, 42, 0.8);
+      border-bottom: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      padding: 16px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .dash-logo {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: var(--text-light);
+      text-decoration: none;
+    }
+
+    .dash-logo span {
+      color: var(--accent);
+    }
+
+    .dash-user {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .user-info {
+      text-align: right;
+    }
+
+    .user-email {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+
+    .user-role {
+      font-size: 0.75rem;
+      color: var(--text-gray);
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-light);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-logout:hover {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* Dashboard Body */
+    .dash-body {
+      flex: 1;
+      padding: 40px;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* KPIs Grid */
+    .kpis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg-dark);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      transition: var(--transition);
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(21, 46, 96, 0.25);
+    }
+
+    .kpi-icon {
+      font-size: 2.2rem;
+      background: rgba(255, 255, 255, 0.03);
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+    }
+
+    .kpi-details h4 {
+      font-size: 0.8rem;
+      color: var(--text-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .kpi-details .value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-light);
+    }
+
+    /* Filtros y Buscador */
+    .control-panel {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-wrapper {
+      flex: 1;
+      min-width: 300px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px 12px 40px;
+      color: var(--text-light);
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-gray);
+      pointer-events: none;
+    }
+
+    .filter-wrapper {
+      display: flex;
+      gap: 12px;
+    }
+
+    .filter-select {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .filter-select:focus {
+      border-color: var(--accent);
+    }
+
+    /* Tabla de Cotizaciones */
+    .table-container {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .quotes-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .quotes-table th {
+      background: rgba(15, 23, 42, 0.6);
+      padding: 18px 24px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .quotes-table td {
+      padding: 16px 24px;
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+    }
+
+    .quotes-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .quotes-table tr {
+      transition: var(--transition);
+    }
+
+    .quotes-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .td-number {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      color: var(--text-light);
+    }
+
+    .td-route {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .route-arrow {
+      color: var(--accent);
+      font-size: 0.8rem;
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-status.pendiente {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .btn-action {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-action:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* Estado Vacío */
+    .empty-state {
+      text-align: center;
+      padding: 60px 40px;
+      color: var(--text-gray);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      color: var(--text-light);
+      margin-bottom: 8px;
+    }
+
+    /* MODAL DE DETALLE Y VISTA IMPRIMIBLE */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-container {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 800px;
+      color: var(--text-dark);
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+      animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      background: #f8fafc;
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--border-gray);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      color: var(--primary);
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: #64748b;
+      line-height: 1;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      color: var(--accent);
+    }
+
+    .modal-body {
+      padding: 32px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-footer {
+      background: #f8fafc;
+      padding: 20px 32px;
+      border-top: 1px solid var(--border-gray);
+      display: flex;
+      gap: 16px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+      transition: var(--transition);
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #475569;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+    }
+
+    /* FORMATO OFICIAL IMPRIMIBLE */
+    .printable-format {
+      background: #ffffff;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+
+    .print-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 16px;
+    }
+
+    .print-logo-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .print-logo-box h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .print-logo-box h4 span {
+      color: var(--accent);
+    }
+
+    .print-logo-box p {
+      font-size: 11px;
+      color: #64748b;
+      margin: 0;
+    }
+
+    .print-meta-box {
+      text-align: right;
+    }
+
+    .print-meta-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .print-meta-number {
+      font-size: 13px;
+      color: #1e293b;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .print-meta-date {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .print-section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 6px;
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+
+    .print-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+    }
+
+    .print-table th {
+      text-align: left;
+      font-size: 12px;
+      color: #64748b;
+      padding: 6px 12px;
+      background-color: #f8fafc;
+      width: 25%;
+      border: 1px solid #e2e8f0;
+    }
+
+    .print-table td {
+      font-size: 12px;
+      color: #1e293b;
+      padding: 6px 12px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .print-desc-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-size: 11px;
+      color: #334155;
+      min-height: 60px;
+      white-space: pre-line;
+      line-height: 1.5;
+    }
+
+    .print-footer {
+      margin-top: 32px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 16px;
+      text-align: center;
+      font-size: 10px;
+      color: #64748b;
+    }
+
+    /* ESTILOS DE IMPRESIÓN */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .modal-overlay {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: auto;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        display: block !important;
+        padding: 0 !important;
+        overflow: visible !important;
+      }
+      .modal-container {
+        box-shadow: none !important;
+        max-height: none !important;
+        overflow: visible !important;
+        width: 100% !important;
+        max-width: none !important;
+        border-radius: 0 !important;
+      }
+      .modal-header, .modal-footer {
+        display: none !important;
+      }
+      .modal-body {
+        padding: 0 !important;
+        overflow: visible !important;
+      }
+      .printable-format {
+        border: none !important;
+        padding: 0 !important;
+        visibility: visible;
+      }
+      .printable-format * {
+        visibility: visible;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CONTENEDOR DE TOASTS -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- PANTALLA DE INICIO DE SESIÓN -->
+  <div id="login-screen" class="login-container">
+    <div class="login-card">
+      <div class="login-logo">OPELCAR<span>.</span></div>
+      <p class="login-subtitle">Panel de Control Administrativo</p>
+      
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Correo Autorizado</label>
+          <input class="form-input" type="email" id="login-email" placeholder="ejemplo@opelcarsas.com" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="login-password">Contraseña</label>
+          <input class="form-input" type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn-login" id="btn-login-submit">Ingresar al Sistema</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- PANTALLA DEL DASHBOARD -->
+  <div id="dashboard-screen" class="dashboard-container">
+    
+    <!-- Navbar Superior -->
+    <header class="dash-header">
+      <a href="#" class="dash-logo">OPELCAR<span>.</span></a>
+      
+      <div class="dash-user">
+        <div class="user-info">
+          <div class="user-email" id="user-email-display">administracion@opelcarsas.com</div>
+          <div class="user-role">Acceso Administrativo Autorizado</div>
+        </div>
+        <button class="btn-logout" id="btn-logout-action">Cerrar Sesión</button>
+      </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="dash-body">
+      
+      <!-- Panel de Estadísticas (KPIs) -->
+      <section class="kpis-grid">
+        <!-- KPI 1 -->
+        <div class="kpi-card">
+          <div class="kpi-icon">📋</div>
+          <div class="kpi-details">
+            <h4>Total Cotizaciones</h4>
+            <div class="value" id="kpi-total-quotes">0</div>
+          </div>
+        </div>
+        <!-- KPI 2 -->
+        <div class="kpi-card">
+          <div class="kpi-icon">⚖️</div>
+          <div class="kpi-details">
+            <h4>Carga Acumulada</h4>
+            <div class="value" id="kpi-total-weight">0.0 Ton</div>
+          </div>
+        </div>
+        <!-- KPI 3 -->
+        <div class="kpi-card">
+          <div class="kpi-icon">📦</div>
+          <div class="kpi-details">
+            <h4>Volumen Acumulado</h4>
+            <div class="value" id="kpi-total-volume">0.0 m³</div>
+          </div>
+        </div>
+        <!-- KPI 4 -->
+        <div class="kpi-card">
+          <div class="kpi-icon">👥</div>
+          <div class="kpi-details">
+            <h4>Clientes Únicos</h4>
+            <div class="value" id="kpi-total-clients">0</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Barra de Filtros y Controles -->
+      <section class="control-panel">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="search-input-field" placeholder="Buscar por número de cotización, cliente, empresa, ruta...">
+        </div>
+        
+        <div class="filter-wrapper">
+          <!-- Filtro por Origen -->
+          <select class="filter-select" id="filter-origin-select">
+            <option value="">Todos los Orígenes</option>
+          </select>
+          <!-- Filtro por Destino -->
+          <select class="filter-select" id="filter-destination-select">
+            <option value="">Todos los Destinos</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Tabla de Datos -->
+      <section class="table-container">
+        <table class="quotes-table" id="quotes-data-table">
+          <thead>
+            <tr>
+              <th>Nº Cotización</th>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Empresa</th>
+              <th>Ruta (Origen -> Destino)</th>
+              <th>Carga (Peso / Vol)</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="quotes-table-body">
+            <!-- Rellenado dinámicamente mediante admin.js -->
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL DE DETALLE DE COTIZACIÓN -->
+  <div id="detail-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="modal-title-consecutivo">Detalles de Cotización OP-1001</h3>
+        <button class="modal-close" id="btn-close-modal">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        
+        <!-- FORMATO OFICIAL DE IMPRESIÓN -->
+        <div class="printable-format" id="printable-quote-document">
+          <div class="print-header">
+            <div class="print-logo-box">
+              <h4>OPELCAR<span>.</span></h4>
+              <p>Operador Logístico de Carga Internacional S.A.S</p>
+            </div>
+            <div class="print-meta-box">
+              <div class="print-meta-title">SOLICITUD DE COTIZACIÓN</div>
+              <div class="print-meta-number">No. OP-<span id="print-consecutivo">1001</span></div>
+              <div class="print-meta-date">Fecha: <span id="print-date">01/07/2026</span></div>
+            </div>
+          </div>
+
+          <div class="print-section-title">1. Información del Cliente</div>
+          <table class="print-table">
+            <tr>
+              <th>Cliente:</th>
+              <td id="print-client-name">Guillermo Florez</td>
+              <th>Empresa:</th>
+              <td id="print-client-company">Opelcar S.A.S</td>
+            </tr>
+            <tr>
+              <th>Email:</th>
+              <td id="print-client-email">administracion@opelcarsas.com</td>
+              <th>Teléfono:</th>
+              <td id="print-client-phone">3187583839</td>
+            </tr>
+          </table>
+
+          <div class="print-section-title">2. Detalles de la Operación Logística</div>
+          <table class="print-table">
+            <tr>
+              <th>Origen:</th>
+              <td id="print-origin">Ipiales, Colombia</td>
+              <th>Destino:</th>
+              <td id="print-destination">Bogotá, Colombia</td>
+            </tr>
+            <tr>
+              <th>Carga Requerida:</th>
+              <td><strong id="print-weight">15.5</strong> Toneladas (Ton)</td>
+              <th>Volumen Declarado:</th>
+              <td><strong id="print-volume">25.0</strong> m³ (Metros Cúbicos)</td>
+            </tr>
+          </table>
+
+          <div class="print-section-title">3. Descripción de Mercancía y Requerimientos</div>
+          <div class="print-desc-box" id="print-message">
+            Mercancía en cajas sobre estibas de madera.
+          </div>
+
+          <div class="print-footer">
+            <p>Este documento es un registro oficial de solicitud de servicios logísticos locales e internacionales.</p>
+            <p><strong>OPELCAR S.A.S</strong> — Carrera 8va #25a – 97, Ipiales, Colombia — gerencia@opelcarsas.com</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-close-modal-footer">Cerrar</button>
+        <button class="btn btn-primary" id="btn-print-document">🖨️ Imprimir / Guardar PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts interactivos de administración -->
+  <script src="admin.js"></script>
+</body>
+</html>

@@ -1,10 +1,45 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
+
+// Carpeta para guardar las cotizaciones en disco
+const DATA_DIR = path.join(__dirname, 'cotizaciones');
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR);
+}
+
+// Almacenamiento en memoria para sesiones activas de administración
+const activeSessions = new Set();
+
+// Función para obtener el siguiente consecutivo de cotización
+function getNextConsecutivo() {
+  try {
+    const files = fs.readdirSync(DATA_DIR);
+    let maxNum = 1000; // Comenzará en 1001 la primera vez
+    
+    files.forEach(file => {
+      if (file.startsWith('OP-') && file.endsWith('.json')) {
+        const numStr = file.replace('OP-', '').replace('.json', '');
+        const num = parseInt(numStr, 10);
+        if (!isNaN(num) && num > maxNum) {
+          maxNum = num;
+        }
+      }
+    });
+    
+    return `OP-${maxNum + 1}`;
+  } catch (error) {
+    console.error('Error al generar consecutivo secuencial:', error);
+    return `OP-${Math.floor(1000 + Math.random() * 9000)}`;
+  }
+}
 
 // Middlewares
 app.use(cors());
@@ -51,9 +86,7 @@ app.post('/api/cotizacion', async (req, res) => {
       destino,
       cargaPeso,
       cargaVolumen,
-      mensaje,
-      pdfBase64,
-      pdfFilename
+      mensaje
     } = req.body;
 
     // Validar datos obligatorios
@@ -64,13 +97,35 @@ app.post('/api/cotizacion', async (req, res) => {
       });
     }
 
-    const consecutivo = `OP-${Math.floor(1000 + Math.random() * 9000)}`;
+    const consecutivo = getNextConsecutivo();
     const fecha = new Date().toLocaleDateString('es-CO', {
       timeZone: 'America/Bogota',
       year: 'numeric',
       month: '2-digit',
       day: '2-digit'
     });
+
+    // Guardar la cotización localmente en formato JSON
+    const cotizacionData = {
+      consecutivo,
+      fecha,
+      nombre,
+      empresa,
+      email,
+      telefono,
+      origen,
+      destino,
+      cargaPeso: parseFloat(cargaPeso),
+      cargaVolumen: parseFloat(cargaVolumen),
+      mensaje,
+      status: 'pendiente'
+    };
+
+    fs.writeFileSync(
+      path.join(DATA_DIR, `${consecutivo}.json`),
+      JSON.stringify(cotizacionData, null, 2),
+      'utf8'
+    );
 
     // Construcción del diseño del correo en HTML corporativo
     const mailOptions = {
@@ -253,14 +308,7 @@ app.post('/api/cotizacion', async (req, res) => {
           </div>
         </body>
         </html>
-      `,
-      attachments: pdfBase64 ? [
-        {
-          filename: pdfFilename,
-          content: pdfBase64,
-          encoding: 'base64'
-        }
-      ] : []
+      `
     };
 
     // Enviar correo
@@ -282,6 +330,104 @@ app.post('/api/cotizacion', async (req, res) => {
       details: error.message
     });
   }
+});
+
+// Endpoint para el inicio de sesión del administrador
+app.post('/api/admin/login', (req, res) => {
+  const { email, password } = req.body;
+
+  const adminPass = process.env.ADMIN_PASS;
+  const adminEmailsStr = process.env.ADMIN_EMAILS || '';
+  const adminEmails = adminEmailsStr.split(',').map(e => e.trim().toLowerCase());
+
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      error: 'Debe ingresar el correo y la contraseña.'
+    });
+  }
+
+  if (password === adminPass && adminEmails.includes(email.trim().toLowerCase())) {
+    // Generar token de sesión único de 48 caracteres hexadecimales
+    const token = crypto.randomBytes(24).toString('hex');
+    activeSessions.add(token);
+
+    res.status(200).json({
+      success: true,
+      message: 'Autenticación exitosa.',
+      token
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      error: 'Credenciales inválidas o correo no autorizado.'
+    });
+  }
+});
+
+// Endpoint para obtener la lista de cotizaciones registradas
+app.get('/api/admin/cotizaciones', (req, res) => {
+  const authHeader = req.headers['authorization'];
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({
+      success: false,
+      error: 'Acceso no autorizado. Token ausente.'
+    });
+  }
+
+  const token = authHeader.split(' ')[1];
+  if (!activeSessions.has(token)) {
+    return res.status(401).json({
+      success: false,
+      error: 'Sesión inválida o expirada.'
+    });
+  }
+
+  try {
+    const files = fs.readdirSync(DATA_DIR);
+    const cotizaciones = [];
+
+    files.forEach(file => {
+      if (file.startsWith('OP-') && file.endsWith('.json')) {
+        const filePath = path.join(DATA_DIR, file);
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        try {
+          cotizaciones.push(JSON.parse(fileContent));
+        } catch (e) {
+          console.error(`Error al parsear el archivo ${file}:`, e);
+        }
+      }
+    });
+
+    // Ordenar de mayor a menor según el consecutivo numérico (más reciente primero)
+    cotizaciones.sort((a, b) => {
+      const numA = parseInt(a.consecutivo.replace('OP-', ''), 10);
+      const numB = parseInt(b.consecutivo.replace('OP-', ''), 10);
+      return numB - numA;
+    });
+
+    res.status(200).json({
+      success: true,
+      cotizaciones
+    });
+  } catch (error) {
+    console.error('Error al leer cotizaciones en disco:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error interno al leer las cotizaciones.'
+    });
+  }
+});
+
+// Endpoint para cerrar sesión
+app.post('/api/admin/logout', (req, res) => {
+  const authHeader = req.headers['authorization'];
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    activeSessions.delete(token);
+  }
+  res.status(200).json({ success: true, message: 'Sesión cerrada correctamente.' });
 });
 
 // Ruta comodín para redirigir peticiones no válidas a index.html (Soporte SPA básico)

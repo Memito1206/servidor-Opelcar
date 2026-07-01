@@ -454,19 +454,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const submitBtn = cotizacionForm.querySelector('button[type="submit"]');
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Generando PDF y Enviando...';
+        submitBtn.textContent = 'Enviando Solicitud...';
       }
 
       // Mostrar toast informativo
-      showToast('Generando documento PDF de cotización...', 'info');
+      showToast('Enviando solicitud al departamento administrativo...', 'info');
 
-      // 1. Inyectar inmediatamente los datos en el elemento HTML para que el PDF se renderice con los datos reales
-      const randNum = Math.floor(1000 + Math.random() * 9000);
-      const consecutivo = `OP-${randNum}`;
+      // 1. Inyectar inmediatamente los datos temporales en el elemento HTML del modal
+      const tempNum = Math.floor(1000 + Math.random() * 9000);
+      const consecutivoTemporal = `OP-${tempNum}`;
       const now = new Date();
       const fechaStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
 
-      document.getElementById('doc-quote-number').textContent = randNum;
+      document.getElementById('doc-quote-number').textContent = tempNum;
       document.getElementById('doc-quote-date').textContent = fechaStr;
       document.getElementById('doc-client-name').textContent = nombre;
       document.getElementById('doc-client-company').textContent = empresa;
@@ -478,85 +478,58 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('doc-op-volume').textContent = parseFloat(cargaVolumen).toFixed(1);
       document.getElementById('doc-op-desc').textContent = mensaje;
 
-      // 2. Opciones de configuración para html2pdf
-      const element = document.getElementById('printable-quote-format');
-      const opt = {
-        margin:       [0.4, 0.4, 0.4, 0.4], // Margen
-        filename:     `Cotizacion_${consecutivo}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      // Preparar la carga útil
+      const payload = {
+        nombre,
+        empresa,
+        email,
+        telefono,
+        origen,
+        destino,
+        cargaPeso,
+        cargaVolumen,
+        mensaje
       };
 
-      // 3. Generar el PDF y enviarlo
-      html2pdf().set(opt).from(element).outputPdf('blob').then((pdfBlob) => {
-        // Mostrar toast de carga
-        showToast('Enviando correo con PDF adjunto al servidor...', 'info');
+      // 2. Realizar petición al backend
+      fetch('/api/cotizacion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error en la respuesta del servidor');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Habilitar botón
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Enviar Solicitud de Cotización';
+        }
 
-        // Convertir el Blob de PDF a Base64
-        const reader = new FileReader();
-        reader.readAsDataURL(pdfBlob);
-        reader.onloadend = () => {
-          const base64data = reader.result.split(',')[1]; // Obtener solo la cadena base64 sin prefijo
+        if (data.success) {
+          // Reemplazar con el consecutivo y fecha reales devueltos por el servidor
+          document.getElementById('doc-quote-number').textContent = data.consecutivo.replace('OP-', '');
+          document.getElementById('doc-quote-date').textContent = data.fecha;
 
-          // Preparar la carga útil
-          const payload = {
-            nombre,
-            empresa,
-            email,
-            telefono,
-            origen,
-            destino,
-            cargaPeso,
-            cargaVolumen,
-            mensaje,
-            pdfBase64: base64data,
-            pdfFilename: `Cotizacion_${consecutivo}.pdf`
-          };
+          // Abrir el modal del Formato Oficial
+          quoteModal.classList.add('open');
+          quoteModal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
 
-          // Petición al backend local de Node.js
-          fetch('/api/cotizacion', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-          })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Error en la respuesta del servidor');
-            }
-            return response.json();
-          })
-          .then(data => {
-            // Habilitar botón de nuevo
-            if (submitBtn) {
-              submitBtn.disabled = false;
-              submitBtn.textContent = 'Enviar Solicitud de Cotización';
-            }
-
-            if (data.success) {
-              // Actualizar datos con los reales del servidor si difieren (ej. fecha del servidor)
-              document.getElementById('doc-quote-number').textContent = data.consecutivo.replace('OP-', '');
-              document.getElementById('doc-quote-date').textContent = data.fecha;
-
-              // Abrir el modal del Formato Oficial
-              quoteModal.classList.add('open');
-              quoteModal.setAttribute('aria-hidden', 'false');
-              document.body.style.overflow = 'hidden';
-
-              // Mostrar toast de éxito final
-              showToast('¡Cotización enviada exitosamente con PDF adjunto!', 'success');
-            } else {
-              throw new Error(data.error || 'Error desconocido.');
-            }
-          })
-          .catch(error => {
-            handleFormError(error);
-          });
-        };
-      }).catch(err => {
-        handleFormError(err);
+          // Mostrar toast de éxito final
+          showToast('¡Cotización enviada exitosamente!', 'success');
+        } else {
+          throw new Error(data.error || 'Error desconocido.');
+        }
+      })
+      .catch(error => {
+        handleFormError(error);
       });
 
       // Función auxiliar para manejar errores y lanzar el fallback mailto
@@ -567,23 +540,23 @@ document.addEventListener('DOMContentLoaded', () => {
           submitBtn.textContent = 'Enviar Solicitud de Cotización';
         }
         
-        console.error('Error al procesar o enviar cotización:', error);
+        console.error('Error al enviar cotización directamente:', error);
         
         // Mensaje de advertencia
         showToast('Error de envío directo. Usando gestor de correo alternativo local...', 'warning');
 
-        // Abrir el modal de todos modos para que el usuario tenga su copia
+        // Abrir el modal con datos temporales
         quoteModal.classList.add('open');
         quoteModal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
 
         // Disparar mailto alternativo
         const destEmail = 'administacion@opelcarsas.com';
-        const subjectText = `Nueva Solicitud de Cotización ${consecutivo} - ${nombre}`;
+        const subjectText = `Nueva Solicitud de Cotización ${consecutivoTemporal} - ${nombre}`;
         const emailBodyText = `==================================================
 SOLICITUD DE COTIZACIÓN - OPELCAR S.A.S
 ==================================================
-No. Documento: ${consecutivo}
+No. Documento: ${consecutivoTemporal}
 Fecha: ${fechaStr}
 
 DATOS DEL CLIENTE:
