@@ -1087,6 +1087,64 @@
       background: #f8fafc;
     }
 
+    .dashboard-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-gray);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-light);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary-light);
+      box-shadow: 0 4px 12px rgba(21, 46, 96, 0.4);
+    }
+
+    /* Estilos de badges de estado */
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.pendiente {
+      background-color: #fef3c7;
+      color: #d97706;
+    }
+
+    .status-badge.enviada {
+      background-color: #e0f2fe; /* Azul claro / celeste */
+      color: #0284c7;
+    }
+
+    .status-badge.aceptada {
+      background-color: #dcfce7; /* Verde */
+      color: #16a34a;
+    }
+
     /* ESTILOS DE IMPRESIÓN */
     @media print {
       body * {
@@ -1260,6 +1318,13 @@
           </select>
         </div>
       </section>
+
+      <!-- Pestañas de Estados (Todas, Pendientes/Enviadas, Aprobadas) -->
+      <div class="dashboard-tabs">
+        <button class="tab-btn active" data-status-tab="all">📋 Todas</button>
+        <button class="tab-btn" data-status-tab="pendientes">⏳ Pendientes / Enviadas</button>
+        <button class="tab-btn" data-status-tab="aprobadas">✅ Aprobadas (Aceptadas)</button>
+      </div>
 
       <!-- Tabla de Datos -->
       <section class="table-container">
@@ -1440,6 +1505,10 @@
       
       <!-- FOOTER DE VISTA DE DETALLES -->
       <div class="modal-footer" id="details-modal-footer">
+        <label class="approve-switch" style="display: flex; align-items: center; gap: 8px; margin-right: auto; cursor: pointer; color: var(--text-light); font-size: 13px; font-weight: 600; padding: 4px 8px; border-radius: 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+          <input type="checkbox" id="checkbox-approve-quote" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary);">
+          <span>✅ Cotización Aprobada</span>
+        </label>
         <button class="btn btn-secondary" id="btn-close-modal-footer">Cerrar</button>
         <button class="btn btn-primary" id="btn-print-document">🖨️ Imprimir Ficha Solicitud</button>
         <button class="btn btn-primary" id="btn-start-quote-action" style="background-color: var(--accent); color: white;">✍️ Responder / Cotizar</button>

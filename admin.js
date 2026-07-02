@@ -68,12 +68,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const editNotesArea = document.getElementById('edit-notes-area');
   const editorPreviewPaper = document.getElementById('editor-preview-paper');
 
+  const checkboxApproveQuote = document.getElementById('checkbox-approve-quote');
+
   // VARIABLES GLOBALES DE ESTADO
   let quotesList = [];
   let token = sessionStorage.getItem('admin_token');
   let userEmail = sessionStorage.getItem('admin_email');
   let currentQuote = null;
   let editorState = {};
+  let activeTab = 'all';
 
   // 1. INICIALIZACIÓN
   const init = () => {
@@ -279,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${empresaDisplay}</td>
         <td><div class="td-route">${rutaDisplay}</div></td>
         <td>${cargaDisplay}</td>
-        <td><span class="badge-status ${statusClass}">${statusClass}</span></td>
+        <td><span class="status-badge ${statusClass}">${statusClass}</span></td>
         <td><button class="btn-action" data-consecutivo="${consecutivoDisplay}">Ver Detalle</button></td>
       `;
 
@@ -318,7 +321,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const matchesOrigin = !originFilter || q.origen === originFilter;
       const matchesDest = !destFilter || q.destino === destFilter;
 
-      return matchesSearch && matchesOrigin && matchesDest;
+      // Filtro por Pestaña de Estado
+      let matchesTab = true;
+      const status = (q.status || 'pendiente').toLowerCase();
+      if (activeTab === 'pendientes') {
+        matchesTab = (status === 'pendiente' || status === 'enviada');
+      } else if (activeTab === 'aprobadas') {
+        matchesTab = (status === 'aceptada');
+      }
+
+      return matchesSearch && matchesOrigin && matchesDest && matchesTab;
     });
 
     renderTable(filteredList);
@@ -327,6 +339,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (searchInputField) searchInputField.addEventListener('input', applyFilters);
   if (filterOriginSelect) filterOriginSelect.addEventListener('change', applyFilters);
   if (filterDestinationSelect) filterDestinationSelect.addEventListener('change', applyFilters);
+
+  // Detector de pestañas (Tabs) de estado
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeTab = btn.getAttribute('data-status-tab');
+      applyFilters();
+    });
+  });
 
   // 8. MODAL DE DETALLE Y VISTA DE IMPRESIÓN
   const openDetailModal = (consecutivo) => {
@@ -351,6 +374,10 @@ document.addEventListener('DOMContentLoaded', () => {
     printWeight.textContent = parseFloat(quote.cargaPeso).toFixed(1);
     printVolume.textContent = parseFloat(quote.cargaVolumen).toFixed(1);
     printMessage.textContent = quote.mensaje || 'Sin observaciones.';
+
+    if (checkboxApproveQuote) {
+      checkboxApproveQuote.checked = (quote.status === 'aceptada');
+    }
 
     hideEditorView();
 
@@ -695,8 +722,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let previewHtml = `
       <div class="paper-header">
         <div class="paper-logo-box">
-          <h3>OPELCAR<span>.</span></h3>
-          <p>Operador Logístico de Carga Internacional S.A.S</p>
+          <img src="assets/Logo_Horizontal.png" alt="OPELCAR S.A.S" style="height: 48px; max-height: 52px; width: auto; display: block;">
         </div>
         <div class="paper-meta-box">
           <div class="paper-meta-title">COTIZACIÓN COMERCIAL</div>
@@ -920,6 +946,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+  if (checkboxApproveQuote) {
+    checkboxApproveQuote.addEventListener('change', () => {
+      if (!currentQuote) return;
+      
+      const newStatus = checkboxApproveQuote.checked ? 'aceptada' : 'enviada';
+      const originalStatus = currentQuote.status;
+
+      checkboxApproveQuote.disabled = true;
+
+      fetch('/api/admin/actualizar-estado', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          consecutivo: currentQuote.consecutivo,
+          status: newStatus
+        })
+      })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(err => { throw new Error(err.error || 'Error al actualizar el estado.'); });
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data.success) {
+          currentQuote.status = newStatus;
+          showToast(`Estado de cotización ${currentQuote.consecutivo} actualizado a ${newStatus} con éxito.`, 'success');
+          updateKPIs();
+          applyFilters();
+        } else {
+          throw new Error('Respuesta inválida del servidor');
+        }
+      })
+      .catch(err => {
+        showToast(err.message, 'error');
+        checkboxApproveQuote.checked = (originalStatus === 'aceptada');
+      })
+      .finally(() => {
+        checkboxApproveQuote.disabled = false;
+      });
+    });
+  }
+
   if (btnCloseModal) btnCloseModal.addEventListener('click', closeModal);
   if (btnCloseModalFooter) btnCloseModalFooter.addEventListener('click', closeModal);
   
@@ -1011,6 +1083,8 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const subject = `Respuesta de Cotización Opelcar ${editorState.consecutivo} - ${editorState.clientName}`;
       
+      const emailBodyHtml = editorPreviewPaper.innerHTML.replace('src="assets/Logo_Horizontal.png"', 'src="cid:logo_opelcar"');
+
       // Inline styles for high quality HTML mail
       const mailHtml = `
         <!DOCTYPE html>
@@ -1047,7 +1121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </head>
         <body>
           <div style="max-width: 650px; margin: 0 auto; border: 1px solid #cbd5e1; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background:#ffffff;">
-            ${editorPreviewPaper.innerHTML}
+            ${emailBodyHtml}
           </div>
         </body>
         </html>

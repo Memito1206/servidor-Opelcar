@@ -7,6 +7,7 @@ from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
 
 # Analizador simple de archivos .env
 def load_env(filepath=".env"):
@@ -356,12 +357,26 @@ class OpelcarRequestHandler(SimpleHTTPRequestHandler):
                 
                 if smtp_user and smtp_pass:
                     cc_email = "guillermocamiloflorezerazo@gmail.com"
-                    msg = MIMEMultipart('alternative')
+                    msg = MIMEMultipart('related')
                     msg['Subject'] = asunto
                     msg['From'] = f"Opelcar Cotizaciones <{smtp_user}>"
                     msg['To'] = email_destinatario
                     msg['Cc'] = cc_email
-                    msg.attach(MIMEText(contenido_html, 'html'))
+                    
+                    msgAlternative = MIMEMultipart('alternative')
+                    msg.attach(msgAlternative)
+                    msgAlternative.attach(MIMEText(contenido_html, 'html'))
+                    
+                    logo_path = os.path.join(os.path.dirname(__file__), "assets", "Logo_Horizontal.png")
+                    if os.path.exists(logo_path):
+                        try:
+                            with open(logo_path, 'rb') as f:
+                                img = MIMEImage(f.read())
+                            img.add_header('Content-ID', '<logo_opelcar>')
+                            img.add_header('Content-Disposition', 'inline', filename="Logo_Horizontal.png")
+                            msg.attach(img)
+                        except Exception as e_logo:
+                            print("Error al adjuntar logo en correo de Python:", str(e_logo))
 
                     recipients = [email_destinatario, cc_email]
                     server = smtplib.SMTP(smtp_host, smtp_port)
@@ -391,6 +406,64 @@ class OpelcarRequestHandler(SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps({"success": True, "message": "Cotización enviada exitosamente al cliente."}).encode('utf-8'))
             except Exception as e:
                 print("❌ Error al enviar cotización en Python:", str(e))
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": "Error interno del servidor.", "details": str(e)}).encode('utf-8'))
+
+        elif self.path == "/api/admin/actualizar-estado":
+            auth_header = self.headers.get('Authorization')
+            if not auth_header or not auth_header.startswith('Bearer '):
+                self.send_response(401)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": "Acceso no autorizado. Token ausente."}).encode('utf-8'))
+                return
+
+            token = auth_header.split(' ')[1]
+            if token not in ACTIVE_SESSIONS:
+                self.send_response(401)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": "Sesión inválida o expirada."}).encode('utf-8'))
+                return
+
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+
+            try:
+                data = json.loads(post_data.decode('utf-8'))
+                consecutivo = data.get("consecutivo")
+                status = data.get("status")
+
+                if not consecutivo or not status:
+                    self.send_response(400)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"success": False, "error": "Faltan campos obligatorios."}).encode('utf-8'))
+                    return
+
+                filepath = os.path.join(DATA_DIR, f"{consecutivo}.json")
+                if not os.path.exists(filepath):
+                    self.send_response(404)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"success": False, "error": "Cotización no encontrada."}).encode('utf-8'))
+                    return
+
+                with open(filepath, "r", encoding="utf-8") as f:
+                    quote_data = json.load(f)
+                quote_data["status"] = status
+                with open(filepath, "w", encoding="utf-8") as f:
+                    json.dump(quote_data, f, indent=2, ensure_ascii=False)
+
+                print(f"✅ Estado de cotización {consecutivo} actualizado a: ${status} en Python")
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "message": "Estado actualizado correctamente."}).encode('utf-8'))
+            except Exception as e:
+                print("❌ Error al actualizar estado en Python:", str(e))
                 self.send_response(500)
                 self.send_header('Content-Type', 'application/json')
                 self.end_headers()

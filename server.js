@@ -463,7 +463,14 @@ app.post('/api/admin/enviar-cotizacion', async (req, res) => {
       to: emailDestinatario,
       cc: ccEmail,
       subject: asunto,
-      html: contenidoHtml
+      html: contenidoHtml,
+      attachments: [
+        {
+          filename: 'Logo_Horizontal.png',
+          path: path.join(__dirname, 'assets', 'Logo_Horizontal.png'),
+          cid: 'logo_opelcar'
+        }
+      ]
     };
 
     await transporter.sendMail(mailOptions);
@@ -492,6 +499,62 @@ app.post('/api/admin/enviar-cotizacion', async (req, res) => {
       success: false,
       error: 'Error al enviar el correo al cliente.',
       details: error.message
+    });
+  }
+});
+
+// Endpoint para actualizar el estado de una cotización manualmente (ej. marcar como aprobada/aceptada)
+app.post('/api/admin/actualizar-estado', (req, res) => {
+  const authHeader = req.headers['authorization'];
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({
+      success: false,
+      error: 'Acceso no autorizado. Token ausente.'
+    });
+  }
+
+  const token = authHeader.split(' ')[1];
+  if (!activeSessions.has(token)) {
+    return res.status(401).json({
+      success: false,
+      error: 'Sesión inválida o expirada.'
+    });
+  }
+
+  try {
+    const { consecutivo, status } = req.body;
+
+    if (!consecutivo || !status) {
+      return res.status(400).json({
+        success: false,
+        error: 'Faltan campos obligatorios para actualizar el estado.'
+      });
+    }
+
+    const filePath = path.join(DATA_DIR, `${consecutivo}.json`);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({
+        success: false,
+        error: 'Cotización no encontrada.'
+      });
+    }
+
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const quoteData = JSON.parse(fileContent);
+    quoteData.status = status;
+    fs.writeFileSync(filePath, JSON.stringify(quoteData, null, 2), 'utf8');
+
+    console.log(`✅ Estado de cotización ${consecutivo} actualizado a: ${status}`);
+    res.status(200).json({
+      success: true,
+      message: `Estado actualizado a ${status} correctamente.`
+    });
+  } catch (error) {
+    console.error('Error al actualizar estado en disco:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error interno al actualizar el estado.'
     });
   }
 });
