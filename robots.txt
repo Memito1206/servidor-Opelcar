@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /admin.js
+Disallow: /server.js
+Disallow: /server.py
+Disallow: /cotizaciones/
+
+Sitemap: https://opelcarsas.com/sitemap.xml
